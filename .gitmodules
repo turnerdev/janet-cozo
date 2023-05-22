@@ -1,0 +1,3 @@
+[submodule "cozo"]
+	path = cozo
+	url = git@github.com:cozodb/cozo.git
