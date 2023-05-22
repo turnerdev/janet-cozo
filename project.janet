@@ -1,7 +1,8 @@
 (declare-project
   :name "cozo"
   :description "Janet bindings to CozoDB"
-  :version "0.0.1")
+  :version "0.0.1"
+  :dependencies ["spork"])
 
 (defn build-cozo-lib-c
   "Build cozo-lib-c"
@@ -14,8 +15,11 @@
 (unless (os/stat "./build/release/libcozo_c.a")
   (build-cozo-lib-c))
 
+(declare-source
+  :source @["cozo.janet"])
+
 (declare-native
-  :name "cozo"
+  :name "cozo-bindings"
   :lflags ["-L./build/release"
            "-l:libcozo_c.a"
            "-lm"

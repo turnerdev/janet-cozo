@@ -1,29 +1,37 @@
 (import cozo)
 
+(def db-path "janet-cozo-test-db")
+(defn delete-db [] (os/execute ["rm" "-rf" (string/format "./%s" db-path)] :p))
+
 # Test memory DB
 (let [db (cozo/open-db "mem" "" "{}")]
   (print "db:" db)
-  (print (cozo/run-query db "?[] <- [['hello', 'world', 'Cozo!']]"))
+  (let [result (cozo/run-query db "?[] <- [['hello', 'world', 'Cozo!']]")
+        rows (get result "rows")]
+    (print (string/format "Found %d row(s)" (length rows)))
+    (each row rows
+      (print (pp row))))
   (cozo/close-db db))
 
 # Persistent rocksdb - store
-(let [db (cozo/open-db "rocksdb" "testdb" "{}")]
-  (print "db:" db)
-  (cozo/run-query db "?[address, company_name, department_name, head_count] <- [[\"Main St\", \"Jupiter Inc\", \"Dept A\", 2]]")
-  (cozo/run-query db "?[address, company_name, department_name, head_count] <- [[\"North St\", \"Neptune Corp\", \"Dept B\", 3]]")
-  (cozo/run-query db ":create dept_info { company_name, department_name => head_count, address }")
-  (cozo/close-db db))
+(defer (delete-db)
 
-# Persistent rocksdb - retrieve
-(let [db (cozo/open-db "rocksdb" "testdb" "{}")]
-  (print "db:" db)
+  (let [db (cozo/open-db "rocksdb" db-path "{}")]
+    (print "db:" db)
+    (cozo/run-query db ["?[address, company_name, department_name, head_count] <- [['Main St', 'Jupiter Inc', 'Dept A', 2],['North St', 'Mercury Corp', 'Dept B', 3]]"
+                        ":create dept_info { company_name, department_name => head_count, address }"])
+    (cozo/close-db db))
 
-  (let [result (cozo/run-query db "?[] := *dept_info{ company_name: \"Neptune Corp\", department_name: \"Dept B\"}")]
-    (map print [(not (nil? (string/find "Neptune" result)))
-                (nil? (string/find "Jupiter" result))]))
+  # Persistent rocksdb - retrieve
+  (let [db (cozo/open-db "rocksdb" db-path "{}")]
+    (print "db:" db)
+    (let [result (cozo/run-query db ["?[company_name, address, head_count] := *dept_info{ company_name, department_name, head_count, address }"])
+          rows (get result "rows")]
+      (if (not (get result "ok"))
+        (print (get result "display"))
+        (do
+          (print (string/format "Found %d row(s)" (length rows)))
+          (each row rows
+            (print (pp row))))))
 
-  (let [result (cozo/run-query db "?[] := *dept_info{ company_name: \"Jupiter Inc\", department_name: \"Dept A\"}")]
-    (map print [(nil? (string/find "Neptune" result))
-                (not (nil? (string/find "Jupiter" result)))]))
-
-  (cozo/close-db db))
+    (cozo/close-db db)))
