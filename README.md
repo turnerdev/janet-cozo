@@ -11,11 +11,11 @@ Basic [CozoDB](https://github.com/cozodb/cozo) bindings for [Janet](https://gith
 
 (defn main
   [& args]
-  (let [db (cozo/open-db "rocksdb" "testdb" "{}")]
-    (let [result (cozo/run-query db "?[] <- [['hello', 'world', 'Cozo!']]")
-          rows (get result "rows")]
-      (print (string/format "Found %d row(s)" (length rows)))
-      (each row rows
-        (print (pp row))))
+  (let [db (cozo/open-db "rocksdb" "testdb" "{}")
+        result (cozo/run-query db "?[] <- [['hello', 'world', 'Cozo!']]")
+        rows (get result "rows")]
+    (print (string/format "Found %d row(s)" (length rows)))
+    (each row rows
+      (print (pp row))))
     (cozo/close-db db)))
 ```
