@@ -11,7 +11,7 @@
   "Build cozo-lib-c"
   []
   (let [project-dir (os/cwd)]
-    (os/cd "./cozo/cozo-lib-c/")
+    (os/cd "./cozo-src/cozo-lib-c/")
     (os/execute ["cargo" "build" "--release" "-p" "cozo_c" "-F" "compact" "-F" "storage-rocksdb" "--target-dir" build-path] :p)
     (os/execute ["cp" libcozo-path build-path] :p)
     (os/cd project-dir)))
@@ -20,7 +20,7 @@
   (build-cozo-lib-c))
 
 (declare-source
-  :source @["src/init.janet"])
+  :source @["cozo"])
 
 (declare-native
   :name "cozo-bindings"
@@ -31,4 +31,4 @@
   :source @["main.c"])
 
 (phony "watch-test" []
-       (os/shell "find . -name '*.janet' | entr -c -r -d jpm janet ./test/newtest.janet"))
+       (os/shell "find . -name '*.janet' | entr -c -r -d jpm janet ./test/test_api.janet"))

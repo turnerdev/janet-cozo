@@ -1,4 +1,4 @@
-(import /src :as cozo)
+(import /cozo)
 
 (def db-path "janet-cozo-test-db")
 (defn delete-db [] (os/execute ["rm" "-rf" (string/format "./%s" db-path)] :p))

@@ -1,4 +1,4 @@
-(import /src :as cozo)
+(import /cozo)
 
 (def nodes-url "https://raw.githubusercontent.com/cozodb/cozo/dev/cozo-core/tests/air-routes-latest-nodes.csv")
 (def edges-url "https://raw.githubusercontent.com/cozodb/cozo/dev/cozo-core/tests/air-routes-latest-edges.csv")

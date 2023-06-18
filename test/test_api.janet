@@ -1,5 +1,5 @@
-(use /src)
-(use /src/api)
+(use /cozo)
+(use /cozo/api)
 
 (def tests
   [[~(? [] <- [[1 2 3]])
