@@ -17,14 +17,15 @@
 
   (let [db (cozo/open db-path)]
     (print "db:" db)
-    (cozo/q db ["?[address, company_name, department_name, head_count] <- [['Main St', 'Jupiter Inc', 'Dept A', 2],['North St', 'Mercury Corp', 'Dept B', 3]]"
-                ":create dept_info { company_name, department_name => head_count, address }"])
+    (cozo/q db
+            "?[address, company_name, department_name, head_count] <- [['Main St', 'Jupiter Inc', 'Dept A', 2],['North St', 'Mercury Corp', 'Dept B', 3]]"
+            ":create dept_info { company_name, department_name => head_count, address }")
     (cozo/close db))
 
   # Persistent rocksdb - retrieve
   (let [db (cozo/open db-path)]
     (print "db:" db)
-    (let [rows (cozo/q db ["?[company_name, address, head_count] := *dept_info{ company_name, department_name, head_count, address }"])]
+    (let [rows (cozo/q db "?[company_name, address, head_count] := *dept_info{ company_name, department_name, head_count, address }")]
       (do
         (print (string/format "Found %d row(s)" (length rows)))
         (each row rows

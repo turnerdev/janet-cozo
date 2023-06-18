@@ -87,26 +87,24 @@
 
 # Open database and download sample data
 (def db (cozo/open))
-(cozo/q db create-airports)
-(cozo/q db create-countries)
-(cozo/q db create-continents)
-(cozo/q db create-idx2code)
-(cozo/q db create-contains)
-(cozo/q db create-routes)
+(cozo/q db ;create-airports)
+(cozo/q db ;create-countries)
+(cozo/q db ;create-continents)
+(cozo/q db ;create-idx2code)
+(cozo/q db ;create-contains)
+(cozo/q db ;create-routes)
 (cozo/q db ~(::remove idx2code))
 (cozo/q db ~(::relations))
 
 # Query format heuristics
-(cozo/q db ~([? [(count-unique to)] := *route {:fr "FRA" :to ?}]))
 (cozo/q db ~(? [(count-unique to)] := *route {:fr "FRA" :to ?}))
-(cozo/q db [`?[count_unique(to)] := *route{fr: "FRA", to}`])
 (cozo/q db `?[count_unique(to)] := *route{fr: "FRA", to}`)
 
 (defn test-result
   # run test, print results
-  [db rules expected]
-  (def query (cozo/api/make-query rules))
-  (def result (cozo/q db rules))
+  [db expected & rules]
+  (def query (cozo/api/make-query ;rules))
+  (def result (cozo/q db ;rules))
   (printf "\n%p\n%s" rules query)
   (if (= (string/format "%p" expected) (string/format "%p" result))
     (printf "OK! %p" result)
@@ -115,59 +113,59 @@
 # How many airports are directly connected to FRA?
 (test-result
   db
-  ~(? [(count-unique to)] := *route {:fr "FRA" :to ?})
+  @[@{(keyword "count_unique(to)") 310}]
 
-  @[@{(keyword "count_unique(to)") 310}])
+  ~(? [(count-unique to)] := *route {:fr "FRA" :to ?}))
 
 
 # How many airports are reachable from FRA by one stop?
 (test-result
   db
+  @[@{(keyword "count_unique(to)") 2222}]
+
   ~(? [(count-unique to)] :=
       *route {:fr "FRA" :to stop}
-      *route {:fr stop :to ?})
-
-  @[@{(keyword "count_unique(to)") 2222}])
+      *route {:fr stop :to ?}))
 
 
 # How many airports are reachable from FRA by any number of stops?
 (test-result
   db
-  ~[(reachable [to] := *route {:fr "FRA" :to ?})
-    (reachable [to] := reachable [stop] *route {:fr stop :to ?})
-    (? [(count-unique to)] := reachable [to])]
+  @[@{(keyword "count_unique(to)") 3462}]
 
-  @[@{(keyword "count_unique(to)") 3462}])
+  ~(reachable [to] := *route {:fr "FRA" :to ?})
+  ~(reachable [to] := reachable [stop] *route {:fr stop :to ?})
+  ~(? [(count-unique to)] := reachable [to]))
 
 
 # What are the two most difficult-to-reach airports by the minimum number of hops required, starting from FRA?
 (test-result
   db
-  ~[(shortest_paths [to (shortest path)] :=
-                    *route {:fr "FRA" :to ?}
-                    path = ["FRA" to])
-    (shortest_paths [to (shortest path)] :=
-                    shortest_paths [stop prev_path]
-                    *route {:fr stop :to ?}
-                    path = (append prev_path to))
-    (? [to path p_len] :=
-       shortest_paths [to path]
-       p_len = (length path))
-    (:order -p_len)
-    (:limit 2)]
-
   @[@{:p_len 8 :path @["FRA" "YYZ" "YTS" "YMO" "YFA" "ZKE" "YAT" "YPO"] :to "YPO"}
-    @{:p_len 7 :path @["FRA" "AUH" "BNE" "ISA" "BQL" "BEU" "BVI"] :to "BVI"}])
+    @{:p_len 7 :path @["FRA" "AUH" "BNE" "ISA" "BQL" "BEU" "BVI"] :to "BVI"}]
+
+  ~(shortest_paths [to (shortest path)] :=
+                   *route {:fr "FRA" :to ?}
+                   path = ["FRA" to])
+  ~(shortest_paths [to (shortest path)] :=
+                   shortest_paths [stop prev_path]
+                   *route {:fr stop :to ?}
+                   path = (append prev_path to))
+  ~(? [to path p_len] :=
+      shortest_paths [to path]
+      p_len = (length path))
+  ~(:order -p_len)
+  ~(:limit 2))
 
 
 # What is the shortest path between FRA and YPO, by actual distance travelled?
 (test-result
   db
-  ~[(start [] <- [["FRA"]])
-    (end [] <- [["YPO"]])
-    (? [src dst distance path] <= (shortest-path-dijkstra *route [] start [] end []))]
-
   @[@{:distance 4544
       :dst "YPO"
       :path @["FRA" "YUL" "YVO" "YKQ" "YMO" "YFA" "ZKE" "YAT" "YPO"]
-      :src "FRA"}])
+      :src "FRA"}]
+
+  ~(start [] <- [["FRA"]])
+  ~(end [] <- [["YPO"]])
+  ~(? [src dst distance path] <= (shortest-path-dijkstra *route [] start [] end [])))

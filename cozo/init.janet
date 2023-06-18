@@ -16,8 +16,8 @@
 
 (defn q
   # query the database
-  [db rules]
-  (def query (api/make-query rules))
+  [db & rules]
+  (def query (api/make-query ;rules))
   (def result (api/make-result (cozo/run-query db query)))
   (def {:ok ok :headers headers :rows rows} result)
   (if ok

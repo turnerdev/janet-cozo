@@ -182,10 +182,8 @@
   (table/to-struct r))
 
 (defn make-query
-  # detect query format, accept strings, expressions and lists
-  [rules]
+  # detect query format, accept cozoscript strings or quasiquoted expressions
+  [& rules]
   (match rules
     ([[a]] (or (symbol? a) (keyword? a))) (string/join (map to-cozo rules) "\n")
-    ([a] (or (symbol? a) (keyword? a))) (to-cozo rules)
-    ([a] (string? a)) (string/join rules "\n")
-    (a (string? a)) rules))
+    ([a] (string? a)) (string/join rules "\n")))
