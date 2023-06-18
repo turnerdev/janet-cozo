@@ -1,5 +1,5 @@
 # janet-cozo
-Basic [CozoDB](https://github.com/cozodb/cozo) bindings for [Janet](https://github.com/janet-lang/janet), under development.
+[Janet](https://github.com/janet-lang/janet) bindings for [CozoDB](https://github.com/cozodb/cozo), an embeddable Datalog database.
 
 # Usage
 
@@ -7,12 +7,26 @@ Basic [CozoDB](https://github.com/cozodb/cozo) bindings for [Janet](https://gith
 (import cozo)
 
 (let [db (cozo/open "test.db")
-      result (cozo/q db "?[] <- [['hello', 'world', 'Cozo!']]")
-      rows (get result "rows")]
+      rows (cozo/q db "?[] <- [['hello', 'world', 'Cozo!']]")]
 
-  (print (string/format "Found %d row(s)" (length rows)))
+  (printf "Found %d row(s)" (length rows))
   (each row rows
-    (print (pp row)))
+    (pp row))
+
+  (cozo/close db))
+```
+
+As an alternative to querying with CozoScript, there is also an experimental quasiquote syntax. See `test` for more examples.
+
+```janet
+(import cozo)
+
+(let [db (cozo/open "test.db")
+      rows (cozo/q db ~(? [] <- [["hello", "world", "Cozo!"]]))]
+
+  (printf "Found %d row(s)" (length rows))
+  (each row rows
+    (pp row))
 
   (cozo/close db))
 ```

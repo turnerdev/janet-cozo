@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1684518795,
-        "narHash": "sha256-zU9nyb8oav7ZarGdR64d0mDiAlm9MUK5H5tZkNQQ4qE=",
+        "lastModified": 1685774487,
+        "narHash": "sha256-VH7qzeU+UU+x3wUBxWCKVHsBb66hTNk4/K6KOkpPGY0=",
         "owner": "turnerdev",
         "repo": "janet-nix",
-        "rev": "6d5c943ebcf94a50508e14ea12f6eb5b466b1322",
+        "rev": "dadf3f220cdf74e6690fbbf6ca6e8cce510099fa",
         "type": "github"
       },
       "original": {
@@ -22,11 +22,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1684570954,
-        "narHash": "sha256-FX5y4Sm87RWwfu9PI71XFvuRpZLowh00FQpIJ1WfXqE=",
+        "lastModified": 1685655444,
+        "narHash": "sha256-6EujQNAeaUkWvpEZZcVF8qSfQrNVWFNNGbUJxv/A5a8=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3005f20ce0aaa58169cdee57c8aa12e5f1b6e1b3",
+        "rev": "e635192892f5abbc2289eaac3a73cdb249abaefd",
         "type": "github"
       },
       "original": {

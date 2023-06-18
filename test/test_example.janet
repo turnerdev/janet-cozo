@@ -1,4 +1,4 @@
-(import cozo)
+(import /src :as cozo)
 
 (def db-path "janet-cozo-test-db")
 (defn delete-db [] (os/execute ["rm" "-rf" (string/format "./%s" db-path)] :p))
@@ -6,8 +6,7 @@
 # Test memory DB
 (let [db (cozo/open)]
   (print "db:" db)
-  (let [result (cozo/q db "?[] <- [['hello', 'world', 'Cozo!']]")
-        rows (get result "rows")]
+  (let [rows (cozo/q db "?[] <- [['hello', 'world', 'Cozo!']]")]
     (print (string/format "Found %d row(s)" (length rows)))
     (each row rows
       (print (pp row))))
@@ -25,13 +24,10 @@
   # Persistent rocksdb - retrieve
   (let [db (cozo/open db-path)]
     (print "db:" db)
-    (let [result (cozo/q db ["?[company_name, address, head_count] := *dept_info{ company_name, department_name, head_count, address }"])
-          rows (get result "rows")]
-      (if (not (get result "ok"))
-        (print (get result "display"))
-        (do
-          (print (string/format "Found %d row(s)" (length rows)))
-          (each row rows
-            (print (pp row))))))
+    (let [rows (cozo/q db ["?[company_name, address, head_count] := *dept_info{ company_name, department_name, head_count, address }"])]
+      (do
+        (print (string/format "Found %d row(s)" (length rows)))
+        (each row rows
+          (print (pp row)))))
 
     (cozo/close db)))

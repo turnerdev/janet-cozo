@@ -1,7 +1,7 @@
 (declare-project
   :name "cozo"
   :description "Janet bindings to CozoDB"
-  :version "0.0.1"
+  :version "0.0.2"
   :dependencies ["spork"])
 
 (def build-path (os/getenv "JANET_BUILDPATH" "build"))
@@ -29,3 +29,6 @@
            "-lm"
            "-lstdc++"]
   :source @["main.c"])
+
+(phony "watch-test" []
+       (os/shell "find . -name '*.janet' | entr -c -r -d jpm janet ./test/newtest.janet"))

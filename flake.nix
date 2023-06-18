@@ -36,7 +36,7 @@
             url = "https://github.com/andrewchambers/jfmt.git";
             rev = "b27dff6bb32b89b20462eec33f50c1583c301b0a";
           };
-          entry = "./jfmt.janet";
+          quickbin = "./jfmt.janet";
         };
       });
 
@@ -47,7 +47,7 @@
           cpkgs = [ clang-tools ];
           rustpkgs = [ cargo ];
         in mkShell {
-          packages = [ janet jpm jfmt ] ++ cpkgs ++ rustpkgs;
+          packages = [ janet jpm jfmt entr ] ++ cpkgs ++ rustpkgs;
           buildInputs = [ janet ];
           shellHook = ''
             # localize jpm dependency paths
