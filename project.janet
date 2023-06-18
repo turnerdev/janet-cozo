@@ -20,7 +20,7 @@
   (build-cozo-lib-c))
 
 (declare-source
-  :source @["cozo.janet"])
+  :source @["src/init.janet"])
 
 (declare-native
   :name "cozo-bindings"
