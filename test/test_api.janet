@@ -53,7 +53,10 @@ d: Any?
     `?[] := a{to}, path[b, c]`]
 
    [~(? [to (shortest d)] := a {:to ?} path [b c])
-    `?[to, shortest(d)] := a{to}, path[b, c]`]])
+    `?[to, shortest(d)] := a{to}, path[b, c]`]
+
+   [~(:rm rel)
+    `:rm rel`]])
 
 (each [query expected] tests
   (def queryd (to-cozo query))

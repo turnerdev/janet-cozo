@@ -21,12 +21,15 @@
 
 (def cozo-ops
   {:replace :replace
-   :create :create})
+   :create :create
+   :put :put
+   :update :update
+   :rm :rm})
 
 (def cozo-funcs
   (merge
     (table-from-symbols
-      ['and 'or 'eq 'shortest 'append 'length])
+      ['and 'or 'eq 'shortest 'append 'length 'gt 'lt 'now 'max 'min])
     {'csv-reader "CsvReader"
      'shortest-path-dijkstra "ShortestPathDijkstra"
      'count-unique "count_unique"}))
@@ -38,8 +41,10 @@
 (defn- to-cozo-fields
   [s]
   (string/join
-    (map (fn [[field dt]]
-           (string/format "%s: %s" field (cozo-dt dt)))
+    (map (fn [a]
+           (match a
+             [field (@ '?)] field
+             [field dt] (string/format "%s: %s" field (cozo-dt dt))))
          (pairs s)) ",\n"))
 
 (defn- stored-op
@@ -48,7 +53,8 @@
     ([table fields] (dictionary? fields)) (stored-op op table [fields])
     [table [keys fields]] (string/format ":%s %s {\n%s\n=>\n%s\n}" op table (to-cozo-fields keys) (to-cozo-fields fields))
     [table [fields]] (string/format ":%s %s {\n%s}" op table (to-cozo-fields fields))
-    ([tables] (dictionary? tables)) (map |(stored-op op ;$) (pairs tables))))
+    ([tables] (dictionary? tables)) (map |(stored-op op ;$) (pairs tables))
+    [table] (string/format ":%s %s" op table)))
 
 (defn to-cozo
   [stmt &opt ctx]
@@ -102,7 +108,7 @@
       ([rulename head & next] (and (symbol? rulename) (dictionary? head)))
       (do
         (dbg "R4")
-        (fmt "%s{%s}%s" rulename (to-cozo head) (delim next)))
+        (fmt "%s{%s}%s" rulename (get-kwargs (kvs head)) (delim next)))
 
       # func application with args e.g. (f 1 2)
       ([[func & xs] & next] (cozo-funcs func))
