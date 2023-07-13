@@ -27,7 +27,7 @@ static Janet cfun_RunQuery(int32_t argc, Janet *argv) {
   int32_t db_id = janet_getinteger(argv, 0);
   const char *query = janet_getcstring(argv, 1);
   const char *empty_params = "{}";
-  char *res = cozo_run_query(db_id, query, empty_params);
+  char *res = cozo_run_query(db_id, query, empty_params, false);
   return janet_cstringv(res);
 }
 
